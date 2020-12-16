@@ -3,6 +3,7 @@ import numpy as np
 import sys
 import argparse
 from __config__ import *
+from skimage.measure import compare_ssim
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input')
@@ -26,9 +27,6 @@ if part == 'phai_lanephai':
 if part == 'trai_lanetrai':
     prefix = 'll{}__'.format(args.prefix) # re trai, lane trai
 
-if not os.path.exists(san+'/images/'+part):
-    os.makedirs(san+'/images/'+part)
-
 cap = cv2.VideoCapture(args.input)
 
 if not cap.isOpened():
@@ -46,7 +44,6 @@ k = 0
 t = 15
 count = 0
 last_frame = None
-skip_frm = 0
 while True:
     ret, frame = cap.read()
 
@@ -56,7 +53,7 @@ while True:
 
         # Display the resulting frame
         cv2.imshow('frame', frame)
-        skip_frm = skip_frm + 1
+
         key = cv2.waitKey(t)
         if key == 27:
             break
@@ -75,7 +72,19 @@ while True:
         if not skip:
             k = k + 1
             # if k % 1 == 0:
-            if skip_frm%10==0:
+            if last_frame is not None:
+                g1 = cv2.cvtColor(last_frame, cv2.COLOR_BGR2GRAY)
+                g2 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                (score, diff) = compare_ssim(g1, g2, full=True)
+                print('ssim', score)
+                if score < 1:
+                    last_frame = frame
+                else:
+                    save = False
+            else:
+                last_frame = frame
+            
+            if save is True:
                 cv2.imwrite(san+'/images/'+part+'/' + prefix + str(k+add) + postfix + '.jpg', frame)
                 count = count + 1
                 print(count)

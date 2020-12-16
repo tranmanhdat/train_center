@@ -2,28 +2,41 @@ import os
 import numpy as np
 
 # batch_size = 256*1
-batch_size = 128*1
+batch_size = 32*1
 epochs = 150 #130
 learning_rate = 0.001
 train_size = 0.8
 
 san = 'santrai' # santrai
-part = 'trai_lanephai' # nuadau
+part = 'trai_lanephai-trai' # nuadau
                 # thang_lanephai, phai_lanephai, thang_lanetrai (san phai)
-                # thang_lanephai, trai_lanephai, trai_lanetrai (san trai)
+                # thang_lanephai, trai_lanephai, trai_lanetrai,  trai_lanephai-trai, trai_lanetrai-phai (san trai)
 
-lanepath = part.split('_')[-1] # '', 'lanephai', 'lanetrai'
+route = ''
+# lanepath = ''
+current_lane = ''
+expect_lane = ''
+
+if '_' in part:
+    route = part.split('_')[0]
+    # lanepath = part.split('_')[-1].split('-')[0] # '', 'lanephai', 'lanetrai'
+    current_lane = part.split('_')[-1].split('-')[0]
+    expect_lane = current_lane.split('lane')[1]
+if '-' in part:
+    expect_lane = part.split('-')[1]
 
 HEIGHT, WIDTH = 135, 320
+HEIGHT_MORE = 40
 # model_num_postfix = '3_santrai' # model good to predict
-model_num_postfix = 'santrai_nuadau__2' # model save
+# model_num_postfix = 'santrai_chuyenlane_1' # model save
+# model_num_postfix = 'santrai__new_draw_signal__1' # model save
+model_num_postfix = 'santrai__new_draww__1'
 line_from_bottom = 70
 line1 = 240-line_from_bottom #90=160-70
 
 mixed_input = False
 
 draw_guide_append = True
-
 
 
 if mixed_input:
@@ -34,7 +47,8 @@ if mixed_input:
     data_path_y = 'data/y_mixed.npy'
     INPUT_SHAPE = (HEIGHT, WIDTH, 3)
 else:
-    postfix_name = '320x{}__{}+40__{}'.format(HEIGHT+40, HEIGHT, model_num_postfix)
+    # postfix_name = '320x{}__{}+40__{}'.format(HEIGHT+40, HEIGHT, model_num_postfix)
+    postfix_name = '320x{}__{}+{}__{}'.format(HEIGHT+HEIGHT_MORE, HEIGHT, HEIGHT_MORE, model_num_postfix)
     model_name = 'draw_more__{}'.format(postfix_name)
     data_dir = 'data/{}'.format(postfix_name)
     if not os.path.exists(data_dir):
@@ -45,14 +59,24 @@ else:
 
 
 if draw_guide_append:
-    INPUT_SHAPE = (HEIGHT+40, WIDTH, 3)
+    INPUT_SHAPE = (HEIGHT+HEIGHT_MORE, WIDTH, 3)
 
-    org_thang = (160, 20)
-    org_phai = (300, 20)
-    org_trai = (20, 20)
+    org_thang = (160, HEIGHT_MORE//2)
+    org_phai = (320-HEIGHT_MORE//2, HEIGHT_MORE//2)
+    org_trai = (HEIGHT_MORE//2, HEIGHT_MORE//2)
 
-    pts_lanephai = [(org_thang[0]+40, 0), (org_phai[0]-40, 40)]
-    pts_lanetrai = [(org_trai[0]+40, 0), (org_thang[0]-40,40)]
+    # pts_lanephai = [(org_thang[0]+HEIGHT_MORE, 0), (org_phai[0]-HEIGHT_MORE, HEIGHT_MORE)]
+    # pts_lanetrai = [(org_trai[0]+HEIGHT_MORE, 0), (org_thang[0]-HEIGHT_MORE,HEIGHT_MORE)]
+
+    # if route == 'trai':
+    #     pts_lanephai = [(org_thang[0]+HEIGHT_MORE, 0), (320-HEIGHT_MORE, HEIGHT_MORE)]
+    #     pts_lanetrai = [(org_trai[0]+HEIGHT_MORE, 0), (org_thang[0],HEIGHT_MORE)]
+    # elif route == 'phai':
+    #     pts_lanephai = [(org_thang[0], 0), (org_thang[0]+HEIGHT_MORE, HEIGHT_MORE)]
+    #     pts_lanetrai = [(org_trai[0]+HEIGHT_MORE, 0), (org_thang[0]-HEIGHT_MORE,HEIGHT_MORE)]
+    pts_route = [(0, 0), (160, HEIGHT_MORE)]
+    pts_lane_current = [(160, 0), (240, HEIGHT_MORE)]
+    pts_lane_expect = [(240, 0), (320, HEIGHT_MORE)]
 else:
     INPUT_SHAPE = (HEIGHT, WIDTH, 3)
 

@@ -99,6 +99,7 @@ def extractor(inputs):
 
 
 ''' Load data '''
+print('data_path_x', data_path_x)
 X = np.load(data_path_x)
 Y = np.load(data_path_y)
 y1= Y[:,0]

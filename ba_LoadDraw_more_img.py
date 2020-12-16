@@ -16,9 +16,9 @@ model_name = 'draw_more__320x175__135+40__3_santrai'
 print('*** model_name', model_name)
 
 
-import tensorflow as tf
-# import tensorflow.compat.v1 as tf
-# tf.disable_v2_behavior()
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 # Fixed error Could not create cudnn handle: CUDNN_STATUS_INTERNAL_ERROR
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -74,7 +74,7 @@ i = 0
 side = -1
 
 while True:
-    # print(images[i])
+    print(images[i])
     is_blue = 0
     is_green = False
     side = -1 * side

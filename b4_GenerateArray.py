@@ -91,13 +91,17 @@ txt = {
         'nuadau': {},
         'phai_lanephai': {},
         'thang_lanephai': {},
-        'thang_lanetrai': {}
+        'thang_lanetrai': {},
+        # 'thang_lanetrai-phai': {},
+        # 'thang_lanephai-trai': {}
     },
     'santrai': {
         'nuadau': {},
         'thang_lanephai': {},
         'trai_lanephai': {},
-        'trai_lanetrai': {}
+        'trai_lanetrai': {},
+        'trai_lanephai-trai': {},
+        'trai_lanetrai-phai': {}
     }
 }
 not_correct = 0
